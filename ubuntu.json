@@ -1,0 +1,40 @@
+{
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "guest_os_type": "Ubuntu_64",
+      "iso_url": "https://releases.ubuntu.com/noble/ubuntu-24.04-live-server-amd64.iso",
+      "iso_checksum": "sha256:8762f7e74e4d64d72fceb5f70682e6b069932deedb4949c6975d0f0fe0a91be3",
+      "ssh_username": "ubuntu",
+      "ssh_password": "ubuntu",
+      "ssh_wait_timeout": "20m",
+      "shutdown_command": "echo 'ubuntu' | sudo -S shutdown -P now",
+      "vm_name": "ubuntu-server",
+      "disk_size": 10240,
+      "memory": 1024,
+      "cpus": 1,
+      "boot_command": [
+        "<esc><wait>",
+        "install <wait>",
+        "auto<wait>",
+        "netcfg/get_hostname={{ .Name }}<wait>",
+        "netcfg/get_domain=local<wait>",
+        "fb=false<wait>",
+        "debconf/priority=critical<wait>",
+        "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<wait>",
+        "fb=false<wait>",
+        "hostname={{ .Name }}<wait>",
+        "rootpw={{ .SSHPassword }}<wait>",
+        "finish<wait>"
+      ],
+      "boot_wait": "10s",
+      "output_directory": "output-ubuntu"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "scripts/setup.sh"
+    }
+  ]
+}
